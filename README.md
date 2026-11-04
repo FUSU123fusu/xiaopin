@@ -1,5 +1,7 @@
 # 小品工厂（xiaopin）
 
+[![tests](https://github.com/FUSU123fusu/xiaopin/actions/workflows/tests.yml/badge.svg)](https://github.com/FUSU123fusu/xiaopin/actions/workflows/tests.yml)
+
 把一篇文章变成一出**能听的、有配音的多角色小品**。
 
 丢进来一个 PDF / Word / 网页链接 / Markdown / 纯文本，出来四样东西：
