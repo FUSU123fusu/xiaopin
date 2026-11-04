@@ -96,9 +96,10 @@ def _synthesize_line(idx, line, chars, module, audio_dir: Path, wav_dir: Path):
     mp3_path = audio_dir / f"{stem}.mp3"
     wav_path = wav_dir / f"{stem}.wav"
 
-    voice = ch.get("voice", "zh-CN-XiaoxiaoNeural")
-    rate = ch.get("rate", "+0%")
-    pitch = ch.get("pitch", "+0Hz")
+    voice = line.get("voice") or ch.get("voice", "zh-CN-XiaoxiaoNeural")
+    # 逐句覆盖优先于角色默认，用于贯口加速、复读递进等表演处理
+    rate = line.get("rate") or ch.get("rate", "+0%")
+    pitch = line.get("pitch") or ch.get("pitch", "+0Hz")
 
     if not SPEAKABLE_RE.search(text):
         # 纯标点（如「……」）：这是表演中的静默节拍，不送去 TTS，直接生成静音

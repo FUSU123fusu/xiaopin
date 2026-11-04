@@ -51,6 +51,18 @@ python scripts/assemble.py work -o out
 
 `--workers` 控制并发线程数（默认 6，edge-tts 建议不超过 8）。
 
+## 表演调节
+
+edge-tts 不会自己"演"，但可以逐句改语速/音高来制造表演层次：
+
+```bash
+python scripts/tune.py work/script.json --ramp 89:130 --rate-from 0 --rate-to 25
+python scripts/tune.py work/script.json --set 175:176 --rate -15
+```
+
+`--ramp` 线性渐变（贯口加速），`--set` 固定值（包袱刹车、冷面台词）。
+改完重跑 `tts.py`。详见 `SKILL.md`。
+
 ## 已有剧本直接导入
 
 输入本身就是写好的小品/相声剧本时，跳过改写，直接转成可配音的 JSON：

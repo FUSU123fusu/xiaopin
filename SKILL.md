@@ -87,6 +87,35 @@ python scripts/assemble.py work -o out
 
 不要复述整个剧本内容，用户会自己打开 md 看。
 
+## 表演调节（逐句语速/音高）
+
+角色的 rate/pitch 是全程固定的，但贯口要加速、复读要递进、包袱要刹车。用 `tune.py` 批量设置：
+
+```bash
+# 先看某段
+python scripts/tune.py work/script.json --show 89:130
+
+# 数来宝逐句加速 +0% → +25%，同时升调
+python scripts/tune.py work/script.json --ramp 89:130 --rate-from 0 --rate-to 25 --pitch-from 0 --pitch-to 4
+
+# 包袱前突然刹车
+python scripts/tune.py work/script.json --set 175:176 --rate -15
+
+# 冷面台词
+python scripts/tune.py work/script.json --set 293:293 --rate -12 --pitch -4
+```
+
+必须处理的四类段落：
+
+| 段落 | 处理 |
+|---|---|
+| 贯口 / 数来宝 | 逐句加速到 +25~30% |
+| 复读递进（连喊同一句） | 逐句加速 + 升调，最后一句最高 |
+| 包袱刹车（「一样儿不卖——退款」） | 突然降到 -15% |
+| 冷面台词（「已激活」） | -10~-15%，降 3~5Hz |
+
+调节只改剧本，不动音频；改完重跑 `tts.py` 即可。
+
 ## 已有剧本直接导入
 
 如果输入本身就是一份写好的小品/相声剧本（不是文章），**不要重写**，直接导入：
