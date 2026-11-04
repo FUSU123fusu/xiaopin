@@ -1,0 +1,21 @@
+{
+  "engine": "edge",
+
+  "edge": {
+    "comment": "默认引擎，无需任何配置"
+  },
+
+  "openai": {
+    "comment": "OpenAI 兼容 TTS 接口。也可指向任何兼容 /v1/audio/speech 的服务",
+    "api_key": "sk-...",
+    "base_url": "https://api.openai.com/v1",
+    "model": "gpt-4o-mini-tts",
+    "format": "mp3"
+  },
+
+  "local": {
+    "comment": "本地 TTS HTTP 服务，需自行部署（CosyVoice / Fish Audio / GPT-SoVITS 等）",
+    "base_url": "http://127.0.0.1:9880/tts",
+    "format": "wav"
+  }
+}

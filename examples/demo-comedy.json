@@ -1,0 +1,406 @@
+{
+  "title": "拖延症患者的一天",
+  "style": "comedy",
+  "source": {
+    "file": "tests/fixtures/sample.md",
+    "char_count": 320
+  },
+  "characters": [
+    {
+      "id": "A",
+      "name": "老张",
+      "persona": "资深拖延症患者，嘴硬，能把任何建议翻译成'我明天再说'",
+      "voice": "zh-CN-liaoning-XiaobeiNeural",
+      "rate": "-5%",
+      "pitch": "-2Hz"
+    },
+    {
+      "id": "B",
+      "name": "小刘",
+      "persona": "心理学研究生，热心，说话快，总想用理论拯救老张",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+8%",
+      "pitch": "+4Hz"
+    }
+  ],
+  "lines": [
+    {
+      "speaker": "A",
+      "text": "小刘啊，你说这人吧，是不是得有点追求？",
+      "emotion": "意味深长",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "B",
+      "text": "张哥，您这追求是指……",
+      "emotion": "警觉",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "我决定了，从明天开始，我要写本书。",
+      "emotion": "郑重",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "好事啊！写什么书？",
+      "emotion": "兴奋",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "先不急，我得先买个好点的键盘。",
+      "emotion": "理所当然",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "……那您这书什么时候动笔？",
+      "emotion": "试探",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "键盘到了就动笔。",
+      "emotion": "斩钉截铁",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "B",
+      "text": "键盘到了，您写了吗？",
+      "emotion": "追问",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "键盘到了，但我发现桌子太矮，坐着腰疼。",
+      "emotion": "委屈",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "那换桌子啊。",
+      "emotion": "无奈",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "换了。换完我发现屋里光线不好。",
+      "emotion": "认真",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "张哥，您这不叫写作，您这叫装修。",
+      "emotion": "吐槽",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "A",
+      "text": "哎，你这话我就不爱听了。",
+      "emotion": "不乐意",
+      "pause_after_ms": 400
+    },
+    {
+      "speaker": "B",
+      "text": "那您说说，这三个月您一个字写了没有？",
+      "emotion": "逼问",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "写了！",
+      "emotion": "理直气壮",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "B",
+      "text": "写了多少？",
+      "emotion": "惊讶",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "书名。",
+      "emotion": "小声",
+      "pause_after_ms": 1000
+    },
+    {
+      "speaker": "B",
+      "text": "……就一个书名？",
+      "emotion": "无语",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "而且我改了十七遍。",
+      "emotion": "自豪",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "B",
+      "text": "张哥，我今天必须给您上一课。",
+      "emotion": "郑重",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "A",
+      "text": "你别给我上课，我知道，我这叫懒。",
+      "emotion": "认命",
+      "pause_after_ms": 400
+    },
+    {
+      "speaker": "B",
+      "text": "错。您这不是懒。",
+      "emotion": "纠正",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "A",
+      "text": "那是什么？",
+      "emotion": "好奇",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "B",
+      "text": "心理学上这叫情绪调节失败。",
+      "emotion": "学术",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "你再说一遍，我这脑子接受不了这么长的词。",
+      "emotion": "抗拒",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "说白了就是——您怕。",
+      "emotion": "一针见血",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "A",
+      "text": "我怕什么？我一大老爷们儿。",
+      "emotion": "不服",
+      "pause_after_ms": 400
+    },
+    {
+      "speaker": "B",
+      "text": "您怕写出来烂。怕写完一看，哎呀，原来我没那么厉害。",
+      "emotion": "戳心",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "A",
+      "text": "……你这孩子怎么说话呢。",
+      "emotion": "被说中",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "拖延的人躲的不是活儿，是干活儿时候那种难受劲儿。",
+      "emotion": "解释",
+      "pause_after_ms": 700
+    },
+    {
+      "speaker": "A",
+      "text": "那我买键盘，也是躲？",
+      "emotion": "反思",
+      "pause_after_ms": 400
+    },
+    {
+      "speaker": "B",
+      "text": "买键盘多舒服啊，花钱、挑款式、等快递，全是爽的。",
+      "emotion": "点破",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "写书多难受啊，一个字一个字往外蹦。",
+      "emotion": "感慨",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "对喽。您这脑子在帮您挑舒服的，不挑有用的。",
+      "emotion": "总结",
+      "pause_after_ms": 700
+    },
+    {
+      "speaker": "A",
+      "text": "那这脑子是不是有点缺德？",
+      "emotion": "愤慨",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "B",
+      "text": "不怪它，它就这么设计的。所以得骗它。",
+      "emotion": "支招",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "怎么骗？",
+      "emotion": "来劲了",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "B",
+      "text": "把活儿拆小。小到不可能失败。",
+      "emotion": "郑重",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "多小算小？",
+      "emotion": "追问",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "B",
+      "text": "就写一句话。写完这一句，今天就算完成任务。",
+      "emotion": "轻描淡写",
+      "pause_after_ms": 700
+    },
+    {
+      "speaker": "A",
+      "text": "一句话？那也太少了，我这么有才华的人。",
+      "emotion": "不屑",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "您先把一句话写出来再说才华的事。",
+      "emotion": "呛声",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "A",
+      "text": "……行，就一句话。",
+      "emotion": "妥协",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "B",
+      "text": "还有一招，允许自己写得很烂。",
+      "emotion": "补充",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "A",
+      "text": "写得很烂？那我这脸往哪儿搁？",
+      "emotion": "纠结",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "B",
+      "text": "先写烂的，再改好的。烂稿子没人看，您也没损失。",
+      "emotion": "开导",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "哦——那我先写个烂的。",
+      "emotion": "恍然大悟",
+      "pause_after_ms": 700
+    },
+    {
+      "speaker": "B",
+      "text": "对，先动起来，焦虑自己会降。",
+      "emotion": "鼓励",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "因为大脑一发现没那么可怕，就不躲了？",
+      "emotion": "接话",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "B",
+      "text": "张哥，您这不是挺明白的吗。",
+      "emotion": "欣慰",
+      "pause_after_ms": 700
+    },
+    {
+      "speaker": "A",
+      "text": "明白归明白……",
+      "emotion": "转折",
+      "pause_after_ms": 400
+    },
+    {
+      "speaker": "B",
+      "text": "又怎么了？",
+      "emotion": "警惕",
+      "pause_after_ms": 300
+    },
+    {
+      "speaker": "A",
+      "text": "我还是觉得，得先买个显示器。",
+      "emotion": "理直气壮",
+      "pause_after_ms": 1200
+    },
+    {
+      "speaker": "B",
+      "text": "……张哥！",
+      "emotion": "崩溃",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "A",
+      "text": "最后一样，我保证。",
+      "emotion": "讨饶",
+      "pause_after_ms": 900
+    },
+    {
+      "speaker": "B",
+      "text": "您这书啊，我看是永远写不完了。",
+      "emotion": "摇头",
+      "pause_after_ms": 700
+    },
+    {
+      "speaker": "A",
+      "text": "写不完就写不完呗，反正我也没打算写完。",
+      "emotion": "豁达",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "B",
+      "text": "那您买那么多设备干嘛？",
+      "emotion": "费解",
+      "pause_after_ms": 500
+    },
+    {
+      "speaker": "A",
+      "text": "图个心里踏实。",
+      "emotion": "真诚",
+      "pause_after_ms": 1000
+    },
+    {
+      "speaker": "B",
+      "text": "……行吧，那您踏实，我先走了。",
+      "emotion": "放弃",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "哎，等等，你说那个两分钟法则，具体怎么用来着？",
+      "emotion": "叫住",
+      "pause_after_ms": 800
+    },
+    {
+      "speaker": "B",
+      "text": "您不是要买显示器吗？",
+      "emotion": "反问",
+      "pause_after_ms": 600
+    },
+    {
+      "speaker": "A",
+      "text": "显示器可以明天买，先学方法。",
+      "emotion": "冠冕堂皇",
+      "pause_after_ms": 1200
+    }
+  ]
+}
