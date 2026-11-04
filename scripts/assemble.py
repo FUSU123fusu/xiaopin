@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import shutil
 import subprocess
 import sys
 import wave
@@ -168,11 +167,9 @@ def assemble(work_dir: Path, out_dir: Path) -> dict:
     md_path = out_dir / f"{slug}.md"
     md_path.write_text(build_markdown(manifest), encoding="utf-8")
 
-    # 分角色音轨
+    # 分角色音轨（只覆盖本次角色，不清空目录，避免误删其他作品的音轨）
     tracks_dir = out_dir / "tracks"
-    if tracks_dir.exists():
-        shutil.rmtree(tracks_dir)
-    tracks_dir.mkdir()
+    tracks_dir.mkdir(exist_ok=True)
     tracks = build_tracks(manifest, work_dir, tracks_dir)
 
     # 一致性校验：主音轨时长 vs manifest 推算
