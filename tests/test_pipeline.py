@@ -116,6 +116,47 @@ def test_srt_timeline_monotonic_and_aligned(tmp_path):
     assert last["start_ms"] + last["duration_ms"] <= manifest["total_ms"]
 
 
+def test_punctuation_only_line_becomes_silence(tmp_path, monkeypatch):
+    """「……」这类纯标点台词不应送 TTS，而是当作静默节拍。"""
+    called = []
+
+    def fake_synth(text, voice, rate, pitch, out_path):
+        called.append(text)
+        wav = Path(out_path).with_suffix(".tmp.wav")
+        with wave.open(str(wav), "wb") as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(44100)
+            wf.writeframes(b"\x00" * 4410 * 2)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(wav), str(out_path)],
+                       check=True)
+
+    import engines.edge as edge_mod
+    monkeypatch.setattr(edge_mod, "synthesize", fake_synth)
+
+    script = {
+        "title": "静默测试",
+        "style": "xiangsheng",
+        "characters": [
+            {"id": "甲", "name": "甲", "persona": "", "voice": "zh-CN-YunjianNeural"},
+            {"id": "乙", "name": "乙", "persona": "", "voice": "zh-CN-XiaoxiaoNeural"},
+        ],
+        "lines": [
+            {"speaker": "甲", "text": "您这话说的。", "pause_after_ms": 300},
+            {"speaker": "乙", "text": "……", "pause_after_ms": 300},
+            {"speaker": "甲", "text": "得嘞。", "pause_after_ms": 300},
+        ],
+    }
+    manifest = tts.synthesize_script(script, tmp_path / "work", "edge",
+                                     {"engine": "edge", "edge": {}})
+    assert manifest["failures"] == []
+    assert len(manifest["lines"]) == 3
+    silent = [l for l in manifest["lines"] if l.get("silent")]
+    assert len(silent) == 1
+    assert silent[0]["duration_ms"] == 1000  # 500 + 250 * 2
+    assert "……" not in called  # 纯标点没有送引擎
+
+
 def test_end_to_end_with_mock_engine(tmp_path, monkeypatch):
     """用真实 ffmpeg 生成正弦波音频，跑通全流程。"""
 

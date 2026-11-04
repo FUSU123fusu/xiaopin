@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
 import time
+import wave
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -71,6 +73,18 @@ def validate_script(script: dict) -> list[str]:
     return errors
 
 
+SPEAKABLE_RE = re.compile(r"[0-9A-Za-z一-鿿]")
+
+
+def write_silence_wav(path: Path, ms: int, sample_rate: int = 44100) -> None:
+    frames = int(round(ms * sample_rate / 1000))
+    with wave.open(str(path), "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(sample_rate)
+        wf.writeframes(b"\x00" * frames * 2)
+
+
 def _synthesize_line(idx, line, chars, module, audio_dir: Path, wav_dir: Path):
     """合成单句，返回 (idx, 记录 or None, 错误 or None)。可在线程池中并行调用。"""
     speaker = line["speaker"]
@@ -85,6 +99,21 @@ def _synthesize_line(idx, line, chars, module, audio_dir: Path, wav_dir: Path):
     voice = ch.get("voice", "zh-CN-XiaoxiaoNeural")
     rate = ch.get("rate", "+0%")
     pitch = ch.get("pitch", "+0Hz")
+
+    if not SPEAKABLE_RE.search(text):
+        # 纯标点（如「……」）：这是表演中的静默节拍，不送去 TTS，直接生成静音
+        duration = min(2000, 500 + 250 * len(text))
+        write_silence_wav(wav_path, duration)
+        return idx, {
+            "index": idx,
+            "speaker": speaker,
+            "text": text,
+            "emotion": line.get("emotion", ""),
+            "duration_ms": duration,
+            "pause_after_ms": pause,
+            "wav": str(wav_path.relative_to(wav_dir.parent)).replace("\\", "/"),
+            "silent": True,
+        }, None
 
     last_err = None
     for attempt in range(1, MAX_RETRIES + 1):
