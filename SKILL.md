@@ -69,11 +69,11 @@ python scripts/extract.py "<路径或URL>" -o work/source.json
 ### 第 4 步：合成与拼装
 
 ```bash
-python scripts/tts.py work/script.json -o work
+python scripts/tts.py work/script.json -o work --workers 8
 python scripts/assemble.py work -o out
 ```
 
-`tts.py` 会逐句合成、用 ffprobe 取真实时长、生成 `manifest.json`。失败句子会重试 3 次，仍失败则以静音替代并在最后汇总——**看到 failures 不为空要告诉用户**。
+`tts.py` 会**并发**逐句合成（默认 6 线程，`--workers` 可调，edge-tts 建议不超过 8）、用 ffprobe 取真实时长、生成 `manifest.json`。失败句子会重试 3 次，仍失败则跳过并在最后汇总——**看到 failures 不为空要告诉用户**。
 
 `assemble.py` 输出四类文件并校验音画时长一致。
 
@@ -86,6 +86,30 @@ python scripts/assemble.py work -o out
 - 任何警告（TTS 失败、字数偏差、原文偏短）
 
 不要复述整个剧本内容，用户会自己打开 md 看。
+
+## 已有剧本直接导入
+
+如果输入本身就是一份写好的小品/相声剧本（不是文章），**不要重写**，直接导入：
+
+```bash
+python scripts/import_script.py 剧本.md -o work/script.json \
+    --style xiangsheng \
+    --voice-a zh-CN-YunjianNeural --rate-a=+5% \
+    --voice-b zh-CN-XiaoxiaoNeural --rate-b=-3%
+```
+
+它会：
+
+- 只解析「第X折/幕/场」到「演出提示」之间的正戏，跳过人物表、道具、附录
+- 识别 `**甲**（舞台提示）：台词` 格式，把舞台提示抽成 `emotion`
+- 把 `>` 引用块（数来宝、贯口）归给当前说话人
+- 按标点把长句切到 45 字以内
+- 按句末标点设停顿，`【抖包袱】` 前一句自动加到 800ms
+- 输出字数与预计时长
+
+导入后先抽查开头、中段、结尾各 10 句，确认没有丢词再合成。多角色剧本用 `--roles` 不适用，音色需手工改 `script.json`。
+
+注意：`--rate-b=-3%` 必须用等号，否则 `-3%` 会被 argparse 当成选项。
 
 ## 引擎切换
 

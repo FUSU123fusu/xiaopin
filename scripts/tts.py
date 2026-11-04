@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -70,7 +71,54 @@ def validate_script(script: dict) -> list[str]:
     return errors
 
 
-def synthesize_script(script: dict, work_dir: Path, engine_name: str, config: dict) -> dict:
+def _synthesize_line(idx, line, chars, module, audio_dir: Path, wav_dir: Path):
+    """合成单句，返回 (idx, 记录 or None, 错误 or None)。可在线程池中并行调用。"""
+    speaker = line["speaker"]
+    ch = chars[speaker]
+    text = line["text"].strip()
+    pause = int(line.get("pause_after_ms") or 0)
+
+    stem = f"line_{idx:04d}"
+    mp3_path = audio_dir / f"{stem}.mp3"
+    wav_path = wav_dir / f"{stem}.wav"
+
+    voice = ch.get("voice", "zh-CN-XiaoxiaoNeural")
+    rate = ch.get("rate", "+0%")
+    pitch = ch.get("pitch", "+0Hz")
+
+    last_err = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            module.synthesize(text, voice, rate, pitch, mp3_path)
+            if not mp3_path.exists() or mp3_path.stat().st_size == 0:
+                raise RuntimeError("生成了空音频")
+            break
+        except Exception as exc:
+            last_err = exc
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY * attempt)
+    else:
+        return idx, None, str(last_err)
+
+    try:
+        to_wav(mp3_path, wav_path)
+        duration = probe_duration_ms(wav_path)
+    except Exception as exc:
+        return idx, None, f"转换失败: {exc}"
+
+    return idx, {
+        "index": idx,
+        "speaker": speaker,
+        "text": text,
+        "emotion": line.get("emotion", ""),
+        "duration_ms": duration,
+        "pause_after_ms": pause,
+        "wav": str(wav_path.relative_to(wav_dir.parent)).replace("\\", "/"),
+    }, None
+
+
+def synthesize_script(script: dict, work_dir: Path, engine_name: str, config: dict,
+                      workers: int = 6) -> dict:
     module, engine_cfg = load_engine(engine_name, config)
     audio_dir = work_dir / "audio"
     wav_dir = work_dir / "wav"
@@ -78,63 +126,35 @@ def synthesize_script(script: dict, work_dir: Path, engine_name: str, config: di
     wav_dir.mkdir(parents=True, exist_ok=True)
 
     chars = {c["id"]: c for c in script["characters"]}
-    lines_out = []
-    failures = []
-    cursor_ms = 0
     total = len(script["lines"])
+    results: dict[int, dict] = {}
+    failures = []
+    done = 0
 
-    for idx, line in enumerate(script["lines"], 1):
-        speaker = line["speaker"]
-        ch = chars[speaker]
-        text = line["text"].strip()
-        pause = int(line.get("pause_after_ms") or 0)
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        futures = {
+            pool.submit(_synthesize_line, idx, line, chars, module, audio_dir, wav_dir): idx
+            for idx, line in enumerate(script["lines"], 1)
+        }
+        for fut in as_completed(futures):
+            idx, record, error = fut.result()
+            done += 1
+            if error:
+                failures.append({"line": idx, "error": error})
+                print(f"[{done}/{total}] 第 {idx} 句失败: {error}", file=sys.stderr)
+            else:
+                results[idx] = record
+                print(f"[{done}/{total}] {record['speaker']} {record['duration_ms']}ms",
+                      file=sys.stderr)
 
-        stem = f"line_{idx:04d}"
-        mp3_path = audio_dir / f"{stem}.mp3"
-        wav_path = wav_dir / f"{stem}.wav"
-
-        voice = ch.get("voice", "zh-CN-XiaoxiaoNeural")
-        rate = ch.get("rate", "+0%")
-        pitch = ch.get("pitch", "+0Hz")
-
-        ok = False
-        last_err = None
-        for attempt in range(1, MAX_RETRIES + 1):
-            try:
-                module.synthesize(text, voice, rate, pitch, mp3_path)
-                if not mp3_path.exists() or mp3_path.stat().st_size == 0:
-                    raise RuntimeError("生成了空音频")
-                ok = True
-                break
-            except Exception as exc:
-                last_err = exc
-                if attempt < MAX_RETRIES:
-                    time.sleep(RETRY_DELAY * attempt)
-        if not ok:
-            failures.append({"line": idx, "error": str(last_err)})
-            print(f"[{idx}/{total}] 失败: {last_err}", file=sys.stderr)
-            continue
-
-        try:
-            to_wav(mp3_path, wav_path)
-            duration = probe_duration_ms(wav_path)
-        except Exception as exc:
-            failures.append({"line": idx, "error": str(exc)})
-            print(f"[{idx}/{total}] 转换失败: {exc}", file=sys.stderr)
-            continue
-
-        lines_out.append({
-            "index": idx,
-            "speaker": speaker,
-            "text": text,
-            "emotion": line.get("emotion", ""),
-            "start_ms": cursor_ms,
-            "duration_ms": duration,
-            "pause_after_ms": pause,
-            "wav": str(wav_path.relative_to(work_dir)).replace("\\", "/"),
-        })
-        cursor_ms += duration + pause
-        print(f"[{idx}/{total}] {speaker} {duration}ms", file=sys.stderr)
+    # 按原顺序累加起始时间
+    lines_out = []
+    cursor_ms = 0
+    for idx in sorted(results):
+        record = results[idx]
+        record["start_ms"] = cursor_ms
+        cursor_ms += record["duration_ms"] + record["pause_after_ms"]
+        lines_out.append(record)
 
     manifest = {
         "title": script.get("title", ""),
@@ -157,6 +177,8 @@ def main() -> int:
     parser.add_argument("-o", "--out-dir", default="work", help="工作目录（默认 work）")
     parser.add_argument("--engine", help="覆盖 config 中的引擎")
     parser.add_argument("--config", help="config.json 路径")
+    parser.add_argument("--workers", type=int, default=6,
+                        help="并发合成线程数（默认 6；edge-tts 建议不超过 8）")
     args = parser.parse_args()
 
     script = json.loads(Path(args.script).read_text(encoding="utf-8"))
@@ -177,7 +199,8 @@ def main() -> int:
             shutil.rmtree(target)
     work_dir.mkdir(parents=True, exist_ok=True)
 
-    manifest = synthesize_script(script, work_dir, engine_name, config)
+    manifest = synthesize_script(script, work_dir, engine_name, config,
+                                 workers=args.workers)
     total_s = manifest["total_ms"] / 1000
     print(f"\n完成：{len(manifest['lines'])} 句，总长 {total_s:.1f} 秒，"
           f"失败 {len(manifest['failures'])} 句", file=sys.stderr)

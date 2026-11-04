@@ -45,9 +45,25 @@ pip install -r requirements.txt
 ```bash
 python scripts/extract.py "文章.pdf" -o work/source.json
 # 此时由 Claude 读 work/source.json，写 work/script.json
-python scripts/tts.py work/script.json -o work
+python scripts/tts.py work/script.json -o work --workers 8
 python scripts/assemble.py work -o out
 ```
+
+`--workers` 控制并发线程数（默认 6，edge-tts 建议不超过 8）。
+
+## 已有剧本直接导入
+
+输入本身就是写好的小品/相声剧本时，跳过改写，直接转成可配音的 JSON：
+
+```bash
+python scripts/import_script.py 剧本.md -o work/script.json \
+    --style xiangsheng \
+    --voice-a zh-CN-YunjianNeural --rate-a=+5% \
+    --voice-b zh-CN-XiaoxiaoNeural --rate-b=-3%
+```
+
+支持 `**甲**（舞台提示）：台词` 与 `>` 引用块（数来宝/贯口），自动切句、设停顿、
+在 `【抖包袱】` 前加长停顿。详见 `SKILL.md`。
 
 ## 风格
 

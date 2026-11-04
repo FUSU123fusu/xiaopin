@@ -122,7 +122,7 @@ def test_end_to_end_with_mock_engine(tmp_path, monkeypatch):
     def fake_synth(text, voice, rate, pitch, out_path):
         # 生成一段与文字长度成正比的静音 wav，再交给 ffmpeg 转 mp3
         frames = len(text) * 100
-        wav = tmp_path / "tmp.wav"
+        wav = Path(out_path).with_suffix(".tmp.wav")
         with wave.open(str(wav), "wb") as wf:
             wf.setnchannels(1)
             wf.setsampwidth(2)
